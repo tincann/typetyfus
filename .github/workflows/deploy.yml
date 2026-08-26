@@ -25,7 +25,18 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm test
+      - run: npx playwright install --with-deps chromium
+      # The only place the real peer connection gets verified: this machine's
+      # macOS application firewall blocks inbound UDP, so ICE connectivity
+      # checks never complete locally. Linux runners have no such restriction.
+      - run: npm run test:e2e
       - run: npm run build
+      - if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: playwright-report
+          retention-days: 7
       - uses: actions/upload-pages-artifact@v3
         with:
           path: dist
