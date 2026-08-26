@@ -84,3 +84,18 @@ textarea { font-family: ui-monospace, monospace; font-size: 0.8rem; }
   background: #1c1f24; border-radius: 6px; }
 .roster li.gone { opacity: 0.45; text-decoration: line-through; }
 .steps { color: var(--dim); font-size: 0.9rem; padding-left: 1.2rem; }
+
+.results { width: 100%; border-collapse: collapse; margin: 1rem 0; font-variant-numeric: tabular-nums; }
+.results th { text-align: left; color: var(--dim); font-weight: 500; font-size: 0.8rem;
+  text-transform: uppercase; padding: 0.4rem 0.5rem; }
+.results td { padding: 0.5rem; border-top: 1px solid #2a2e35; }
+.results tr.me { background: rgba(91, 157, 255, 0.12); }
+
+.bars { display: grid; gap: 0.5rem; margin: 1rem 0; }
+.bar { display: grid; grid-template-columns: 8ch 1fr 6ch; gap: 0.6rem; align-items: center;
+  font-size: 0.85rem; font-variant-numeric: tabular-nums; }
+.bar .track { height: 8px; background: #2a2e35; border-radius: 4px; overflow: hidden; }
+.bar .fill { height: 100%; background: var(--accent); border-radius: 4px;
+  transition: width 120ms linear; }
+.bar.me .fill { background: var(--done); }
+.bar.gone { opacity: 0.4; }
