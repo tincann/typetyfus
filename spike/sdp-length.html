@@ -1,0 +1,42 @@
+<!doctype html>
+<meta charset="utf-8" />
+<title>SDP length spike</title>
+<body style="font: 14px system-ui; padding: 2rem; background:#14161a; color:#e6e8eb">
+  <h1>SDP length spike</h1>
+  <pre id="out">measuring…</pre>
+  <textarea id="code" rows="6" style="width:100%"></textarea>
+  <script type="module">
+    import { encodeSignal } from '/src/net/sdp.ts'
+
+    const out = document.querySelector('#out')
+    const pc = new RTCPeerConnection({
+      iceServers: [{ urls: 'stun:stun.l.google.com:19302' }],
+    })
+    pc.createDataChannel('race')
+    await pc.setLocalDescription(await pc.createOffer())
+
+    const t0 = performance.now()
+    await new Promise((resolve) => {
+      if (pc.iceGatheringState === 'complete') return resolve()
+      const done = () => { if (pc.iceGatheringState === 'complete') resolve() }
+      pc.addEventListener('icegatheringstatechange', done)
+      setTimeout(resolve, 2500)
+    })
+    const gatherMs = Math.round(performance.now() - t0)
+
+    const sdp = pc.localDescription.sdp
+    const code = await encodeSignal(pc.localDescription)
+    const candidates = sdp.split('\n').filter((l) => l.startsWith('a=candidate')).length
+
+    out.textContent = [
+      `gathering:       ${gatherMs} ms (state: ${pc.iceGatheringState})`,
+      `candidates:      ${candidates}`,
+      `raw SDP:         ${sdp.length} chars`,
+      `encoded code:    ${code.length} chars`,
+      `ratio:           ${(code.length / sdp.length).toFixed(2)}`,
+      ``,
+      code.length <= 1500 ? 'PASTEABLE — design holds.' : 'TOO LONG — revisit the join flow.',
+    ].join('\n')
+    document.querySelector('#code').value = code
+  </script>
+</body>
