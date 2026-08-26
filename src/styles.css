@@ -75,3 +75,12 @@ textarea { font-family: ui-monospace, monospace; font-size: 0.8rem; }
 .stat span { color: var(--dim); font-size: 0.8rem; text-transform: uppercase; }
 .countdown { font-size: 3rem; text-align: center; font-variant-numeric: tabular-nums; min-height: 3.6rem; }
 .muted { color: var(--dim); font-size: 0.9rem; }
+
+.codebox { margin: 1rem 0; display: grid; gap: 0.5rem; }
+.codebox label { font-size: 0.85rem; color: var(--dim); }
+.error-text { color: var(--error); font-size: 0.9rem; min-height: 1.2em; margin: 0; }
+.roster { list-style: none; padding: 0; display: grid; gap: 0.4rem; }
+.roster li { display: flex; justify-content: space-between; padding: 0.4rem 0.6rem;
+  background: #1c1f24; border-radius: 6px; }
+.roster li.gone { opacity: 0.45; text-decoration: line-through; }
+.steps { color: var(--dim); font-size: 0.9rem; padding-left: 1.2rem; }
