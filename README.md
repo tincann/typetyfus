@@ -23,10 +23,30 @@ The passage stays hidden until the race starts. In TypeRacer you can speed-read
 the text during the countdown, which quietly turns part of the game into a
 reading-speed contest. Here everyone starts cold.
 
+## Play it
+
+**https://tincann.github.io/typetyfus/**
+
 ## Status
 
-Design complete, implementation not started. See
-[the design spec](docs/superpowers/specs/2026-08-26-typetyfus-design.md).
+Working. Solo practice and multiplayer rooms both function, and CI runs a
+two-peer end-to-end race on every push.
+
+- [Design spec](docs/superpowers/specs/2026-08-26-typetyfus-design.md)
+- [Implementation plan](docs/superpowers/plans/2026-08-26-typetyfus.md)
+
+## Development
+
+```
+npm install
+npm run dev      # dev server
+npm test         # unit tests
+npm run test:e2e # two-peer race in Playwright
+```
+
+Note on running the e2e test locally: it needs Chromium to receive inbound
+UDP. On macOS the application firewall blocks that, so ICE never completes
+and the test fails even though the app is fine. It runs green on Linux CI.
 
 ## Known limitations
 
@@ -36,3 +56,5 @@ Design complete, implementation not started. See
   Authoritative scoring needs a server.
 - The hidden passage is present in the DOM. It is a UX improvement, not a
   security control.
+- Each joiner is a two-message handshake by hand. That is the floor for
+  signalling without a server, not an implementation shortcut.
