@@ -1,0 +1,77 @@
+:root {
+  --bg: #14161a;
+  --fg: #e6e8eb;
+  --dim: #6b7280;
+  --done: #7dd3a0;
+  --error: #f0616d;
+  --accent: #5b9dff;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--fg);
+  font: 16px/1.5 system-ui, -apple-system, 'Segoe UI', sans-serif;
+  display: flex;
+  justify-content: center;
+  padding: 3rem 1rem;
+}
+
+#app { width: min(70ch, 100%); }
+
+h1 { font-size: 1.5rem; letter-spacing: -0.02em; }
+
+button {
+  font: inherit;
+  padding: 0.5rem 1rem;
+  border: 1px solid var(--dim);
+  border-radius: 6px;
+  background: transparent;
+  color: var(--fg);
+  cursor: pointer;
+}
+button:hover { border-color: var(--accent); }
+button:disabled { opacity: 0.4; cursor: default; }
+button[aria-pressed='true'] { border-color: var(--accent); background: rgba(91, 157, 255, 0.15); }
+
+input, textarea {
+  font: inherit;
+  width: 100%;
+  padding: 0.5rem;
+  border: 1px solid var(--dim);
+  border-radius: 6px;
+  background: #1c1f24;
+  color: var(--fg);
+}
+textarea { font-family: ui-monospace, monospace; font-size: 0.8rem; }
+
+.passage {
+  font: 1.3rem/1.9 ui-monospace, SFMono-Regular, Menlo, monospace;
+  color: var(--dim);
+  /* pre-wrap keeps spaces visible (so the cursor can sit on one) while still
+     allowing lines to break at them. break-word is only a fallback for a word
+     longer than the line. */
+  white-space: pre-wrap;
+  overflow-wrap: break-word;
+  user-select: none;
+  padding: 1.25rem;
+  border-radius: 8px;
+  background: #1c1f24;
+  /* Both properties are composited, so revealing costs no layout work. */
+  transition: filter 220ms ease, opacity 220ms ease;
+}
+.passage.hidden { filter: blur(10px); opacity: 0.35; }
+
+.ch.done { color: var(--done); }
+.ch.current { background: rgba(91, 157, 255, 0.35); border-radius: 2px; }
+.ch.current.error { background: var(--error); color: #fff; }
+
+.row { display: flex; gap: 0.75rem; align-items: center; flex-wrap: wrap; }
+.stats { display: flex; gap: 1.5rem; margin: 1rem 0; font-variant-numeric: tabular-nums; }
+.stat b { display: block; font-size: 1.6rem; font-weight: 600; }
+.stat span { color: var(--dim); font-size: 0.8rem; text-transform: uppercase; }
+.countdown { font-size: 3rem; text-align: center; font-variant-numeric: tabular-nums; min-height: 3.6rem; }
+.muted { color: var(--dim); font-size: 0.9rem; }

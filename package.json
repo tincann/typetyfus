@@ -23,6 +23,7 @@
   "homepage": "https://github.com/tincann/typetyfus#readme",
   "devDependencies": {
     "@types/node": "^26.3.0",
+    "jsdom": "^29.1.1",
     "typescript": "^7.0.2",
     "vite": "^8.2.2",
     "vitest": "^4.1.11"
