@@ -1,0 +1,32 @@
+{
+  "name": "typetyfus",
+  "version": "1.0.0",
+  "description": "TypeRacer-style typing trainer with peer-to-peer rooms, as static assets",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc --noEmit && vite build",
+    "preview": "vite preview",
+    "test": "vitest run"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tincann/typetyfus.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/tincann/typetyfus/issues"
+  },
+  "homepage": "https://github.com/tincann/typetyfus#readme",
+  "devDependencies": {
+    "@types/node": "^26.3.0",
+    "typescript": "^7.0.2",
+    "vite": "^8.2.2",
+    "vitest": "^4.1.11"
+  },
+  "type": "module",
+  "private": true
+}
