@@ -32,7 +32,7 @@ export function mountRace(root: HTMLElement, deps: RaceDeps): void {
   let reportedAt = 0
   let countdownTimer = 0
   let startTimer = 0
-  let shown = false
+  let actionsRendered = false
 
   const countdownBox = el('div', { class: 'countdown' })
   const passageBox = el('div')
@@ -97,13 +97,20 @@ export function mountRace(root: HTMLElement, deps: RaceDeps): void {
     room.finish(result)
     deps.storage.pushResult(result)
     draw()
+    showResults()
   }
 
+  /**
+   * Show the table as soon as *this* player finishes, not only when the whole
+   * race ends. Waiting would leave a finisher staring at completed text with
+   * no feedback while slower peers type. Re-rendering on every change keeps
+   * the table live as the others come in.
+   */
   function showResults(): void {
-    if (shown) return
-    shown = true
     clear(resultsBox)
     resultsBox.append(renderResults(standings(room.state()), selfId))
+    if (actionsRendered) return
+    actionsRendered = true
     clear(actions)
     if (isHost(room)) {
       const again = el('button', {}, ['Race again'])
@@ -151,7 +158,7 @@ export function mountRace(root: HTMLElement, deps: RaceDeps): void {
       return
     }
     drawBars()
-    if (s.phase === 'finished') showResults()
+    if (s.phase === 'finished' || state.finished) showResults()
   })
 
   window.addEventListener('keydown', onKey)

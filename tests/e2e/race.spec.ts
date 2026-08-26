@@ -49,13 +49,24 @@ test('two peers connect, race, and both appear in the results', async ({ browser
   const guestText = await guest.locator('.passage').innerText()
   expect(guestText).toBe(hostText)
 
-  await host.keyboard.type(hostText.replace(/\n/g, ''), { delay: 1 })
+  const plain = hostText.replace(/\n/g, '')
+  await host.keyboard.type(plain, { delay: 1 })
 
+  // A finisher sees their own result immediately, without waiting for others.
   await expect(host.locator('.results')).toBeVisible({ timeout: 30_000 })
 
-  // The guest must see the host's finish relayed over the data channel.
+  // The guest must see the host's progress relayed over the data channel.
   await expect(guest.locator('.bars')).toContainText('hosty', { timeout: 15_000 })
   await expect(guest.locator('.bar.gone')).toHaveCount(0)
+
+  await guest.keyboard.type(plain, { delay: 1 })
+
+  // With everyone finished, both peers show a complete two-row table.
+  for (const page of [host, guest]) {
+    await expect(page.locator('.results tbody tr')).toHaveCount(2, { timeout: 30_000 })
+    await expect(page.locator('.results')).toContainText('hosty')
+    await expect(page.locator('.results')).toContainText('guesty')
+  }
 
   await hostCtx.close()
   await guestCtx.close()
