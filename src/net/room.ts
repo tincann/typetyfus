@@ -169,6 +169,12 @@ export type GuestDeps = { transport: Transport; nick: string; now(): number }
 
 export type GuestRoom = {
   state(): RaceState
+  /**
+   * Fires once the host's room message has been applied, i.e. once the seed
+   * and word count are actually known. Entering the race before this point
+   * would generate a passage from the placeholder seed and desync the peers.
+   */
+  onReady(fn: Listener<RaceState>): void
   selfId(): PeerId | null
   offsetMs(): number
   report(charIndex: number, errors: number): void
@@ -187,6 +193,14 @@ export function createGuestRoom(deps: GuestDeps): GuestRoom {
   const sent = new Map<number, number>()
   const change = emitter<RaceState>()
   const start = emitter<number>()
+  const readyFns: Array<Listener<RaceState>> = []
+  let ready = false
+
+  function markReady(): void {
+    if (ready) return
+    ready = true
+    for (const fn of readyFns) fn(state)
+  }
 
   function set(next: RaceState): void {
     if (next === state) return
@@ -216,6 +230,7 @@ export function createGuestRoom(deps: GuestDeps): GuestRoom {
         self = msg.you
         set({ ...state, seed: msg.seed, wordCount: msg.wordCount, phase: msg.phase })
         syncRoster(msg.peers)
+        markReady()
         break
       case 'pong': {
         const at = sent.get(msg.id)
@@ -269,6 +284,12 @@ export function createGuestRoom(deps: GuestDeps): GuestRoom {
 
   return {
     state: () => state,
+    onReady(fn) {
+      // Late subscribers must still fire, or a race screen mounted after the
+      // room message would wait forever.
+      if (ready) fn(state)
+      else readyFns.push(fn)
+    },
     selfId: () => self,
     offsetMs: () => offset,
     report(charIndex, errors) {

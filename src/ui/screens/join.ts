@@ -32,7 +32,10 @@ export function mountJoin(root: HTMLElement, deps: JoinDeps): void {
           clear(slot)
           slot.append(el('p', { class: 'muted' }, ['Connecting…']))
           const room = createGuestRoom({ transport, nick: deps.nick, now: () => performance.now() })
-          transport.onOpen(() => deps.onRace(room))
+          // onReady, not onOpen: the seed arrives in the host's room message,
+          // which is sent in reply to our hello. Entering on open would render
+          // a passage from the placeholder seed.
+          room.onReady(() => deps.onRace(room))
           transport.onClose(() => {
             clear(slot)
             slot.append(el('p', { class: 'error-text' }, [

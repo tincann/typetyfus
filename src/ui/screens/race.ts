@@ -23,7 +23,8 @@ const REPORT_INTERVAL_MS = 100
 export function mountRace(root: HTMLElement, deps: RaceDeps): void {
   const { room } = deps
   const selfId = room.selfId() ?? HOST_ID
-  const text = passageText(room.state().seed, room.state().wordCount)
+  const mountedSeed = room.state().seed
+  const text = passageText(mountedSeed, room.state().wordCount)
 
   let state: TypingState = initTyping(text)
   let startedAt: number | null = null
@@ -106,11 +107,9 @@ export function mountRace(root: HTMLElement, deps: RaceDeps): void {
     clear(actions)
     if (isHost(room)) {
       const again = el('button', {}, ['Race again'])
-      again.addEventListener('click', () => {
-        room.reset(Math.floor(Math.random() * 2 ** 31))
-        teardown()
-        mountRace(root, deps)
-      })
+      // Only reseed; the seed-change branch in onChange does the remount, so
+      // host and guests take exactly the same path.
+      again.addEventListener('click', () => room.reset(Math.floor(Math.random() * 2 ** 31)))
       actions.append(again)
     } else {
       actions.append(el('span', { class: 'muted' }, ['Waiting for the host to start another…']))
@@ -143,6 +142,14 @@ export function mountRace(root: HTMLElement, deps: RaceDeps): void {
   })
 
   room.onChange((s) => {
+    // A reseed means a new race. Guests learn about it only through this
+    // message, so the remount has to happen here rather than in the button
+    // handler, which only the host ever presses.
+    if (s.seed !== mountedSeed) {
+      teardown()
+      mountRace(root, deps)
+      return
+    }
     drawBars()
     if (s.phase === 'finished') showResults()
   })

@@ -201,6 +201,47 @@ describe('disconnects', () => {
   })
 })
 
+describe('onReady', () => {
+  it('does not fire before the seed is known', async () => {
+    const [, guestSide] = linkedTransports()
+    const guest = createGuestRoom({ transport: guestSide, nick: 'a', now: () => 0 })
+    let fired = false
+    guest.onReady(() => { fired = true })
+    await flush()
+    // No host on the other end, so no room message, so no seed.
+    expect(fired).toBe(false)
+    expect(guest.state().seed).toBe(0)
+  })
+
+  it('fires with the real seed once the host replies', async () => {
+    const h = harness()
+    const { guest } = await h.join('a')
+    let seenSeed: number | null = null
+    guest.onReady((s) => { seenSeed = s.seed })
+    await flush()
+    expect(seenSeed).toBe(42)
+  })
+
+  it('fires immediately for a late subscriber', async () => {
+    // Guards the desync bug: a race screen mounted after the room message
+    // must still be told the seed rather than waiting forever.
+    const h = harness()
+    const { guest } = await h.join('a')
+    await flush()
+    let fired = false
+    guest.onReady(() => { fired = true })
+    expect(fired).toBe(true)
+  })
+
+  it('gives host and guest the same seed, so passages match', async () => {
+    const h = harness()
+    const { guest } = await h.join('a')
+    await flush()
+    expect(guest.state().seed).toBe(h.host.state().seed)
+    expect(guest.state().wordCount).toBe(h.host.state().wordCount)
+  })
+})
+
 describe('reset', () => {
   it('reseeds every guest', async () => {
     const h = harness()
