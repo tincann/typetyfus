@@ -26,7 +26,7 @@ reading-speed contest. Here everyone starts cold.
 ## Status
 
 Design complete, implementation not started. See
-[the design spec](docs/superpowers/specs/2026-08-24-typetyfus-design.md).
+[the design spec](docs/superpowers/specs/2026-08-26-typetyfus-design.md).
 
 ## Known limitations
 

@@ -1,6 +1,6 @@
 # typetyfus — design
 
-**Date:** 2026-08-24
+**Date:** 2026-08-26
 **Status:** approved, ready for implementation planning
 
 A TypeRacer-style typing speed trainer with peer-to-peer multiplayer rooms,
